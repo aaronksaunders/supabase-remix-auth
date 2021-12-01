@@ -1,4 +1,11 @@
-import { useLoaderData, json, Link, Form, useActionData, redirect } from "remix";
+import {
+  useLoaderData,
+  json,
+  Link,
+  Form,
+  useActionData,
+  redirect,
+} from "remix";
 import { supabaseClient } from "~/utils/db.server";
 import { commitSession, getSession } from "~/utils/session.server";
 
@@ -14,49 +21,62 @@ export let loader = () => {
 };
 
 /**
- * 
- * @param {*} param0 
- * @returns 
+ *
+ * @param {*} param0
+ * @returns
  */
-export let action = async ({
-  request
-}) => {
+export let action = async ({ request }) => {
   let form = await request.formData();
   let email = form.get("email");
   let password = form.get("password");
+  let first = form.get("first");
+  let last = form.get("last");
 
   await supabaseClient.auth.signOut();
 
-  const { data: user, error } = await supabaseClient.auth.signIn({ email, password });
-  console.log(user, error)
+  // sign up the user
+  let {
+    session: sessionData,
+    user,
+    error: signUpError,
+  } = await supabaseClient.auth.signUp({
+    email,
+    password,
+  });
 
-  if (user) {
-    let session = await getSession(
-      request.headers.get("Cookie")
-    );
-    session.set("access_token", user.access_token);
+  if (!signUpError) {
+    // create the user in profiles table
+    const { data, error: profileError } = await supabaseClient
+      .from("profiles")
+      .insert([{ email, first, last, id: user?.id }]);
+
+    // if error return
+    if (profileError) return { error: profileError };
+
+    // all good, set session and move on
+    let session = await getSession(request.headers.get("Cookie"));
+    session.set("access_token", sessionData.access_token);
     return redirect("/", {
       headers: {
-        'Set-Cookie': await commitSession(session)
-      }
-    })
+        "Set-Cookie": await commitSession(session),
+      },
+    });
   }
 
   // else return the error
-  return { user, error }
-}
+  return { user, signUpError };
+};
 
 // https://remix.run/api/conventions#meta
 export let meta = () => {
   return {
-    title: "Remix Supabase Starter", 
-    description: "Welcome to remix! Login Page"
+    title: "Remix Supabase Starter",
+    description: "Welcome to remix! Login Page",
   };
 };
 
 // https://remix.run/guides/routing#index-routes
-export default function Login() {
-  let data = useLoaderData();
+export default function CreateAccount() {
   const actionData = useActionData();
 
   return (
@@ -64,7 +84,14 @@ export default function Login() {
       <main>
         <h2>Welcome to Remix - Create Account Page</h2>
         <Form method="post" autoComplete="off">
-          <div style={{ display: 'flex', flex: 1, flexDirection: 'column', alignItems: 'center' }}>
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
             <div className="form_item">
               <label htmlFor="email">EMAIL ADDRESS:</label>
               <input id="email" name="email" type="text" />
@@ -76,26 +103,33 @@ export default function Login() {
             </div>
 
             <div className="form_item">
-              <label htmlFor="last" >LAST NAME:</label>
+              <label htmlFor="last">LAST NAME:</label>
               <input id="last" name="last" type="text" />
             </div>
             <div className="form_item">
               <label htmlFor="password">PASSWORD:</label>
-              <input id="password" name="password" type="password"  />
+              <input id="password" name="password" type="password" />
             </div>
             <div className="form_item">
               <button type="submit">CREATE ACCOUNT</button>
             </div>
 
-            <Link to="/login" replace={true} style={{ display: 'flex', flex: 1, flexDirection: 'column', margin: 16, width: 400 }}>
+            <Link
+              to="/login"
+              replace={true}
+              style={{
+                display: "flex",
+                flex: 1,
+                flexDirection: "column",
+                margin: 16,
+                width: 400,
+              }}
+            >
               CANCEL
             </Link>
-
           </div>
         </Form>
-        <div>
-          {actionData?.error ? actionData?.error?.message : null}
-        </div>
+        <div>{actionData?.error ? actionData?.error?.message : null}</div>
       </main>
     </div>
   );

@@ -7,61 +7,53 @@ import { getSession, destroySession } from "~/utils/session.server";
 // to the component that renders it.
 // https://remix.run/api/conventions#loader
 export let loader = async ({ request }) => {
-  const redirectTo = new URL(request.url).pathname
+  const redirectTo = new URL(request.url).pathname;
 
-  let session = await getSession(
-    request.headers.get("Cookie")
-  );
+  let session = await getSession(request.headers.get("Cookie"));
 
   // if there is no access token in the header then
   // the user is not authenticated, go to login
-  if (!session.has('access_token')) {
-    let searchParams = new URLSearchParams([
-      ["redirectTo", redirectTo]
-    ]);
+  if (!session.has("access_token")) {
+    let searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
     throw redirect(`/login?${searchParams}`);
   } else {
-
     // otherwise execute the query for the page, but first get token
-    const { user, error: sessionErr } = await supabaseClient.auth.api.getUser(session.get("access_token"))
+    const { user, error: sessionErr } = await supabaseClient.auth.api.getUser(
+      session.get("access_token")
+    );
 
     // if no error then get then set authenticated session
     // to match the user associated with the access_token
     if (!sessionErr) {
-
       // activate the session with the auth_token
       supabaseClient.auth.setAuth(session.get("access_token"));
 
       // now query the data you want from supabase
-      const { data: chargers, error } = await supabaseClient.from("chargers").select('*');
+      const { data: chargers, error } = await supabaseClient
+        .from("chargers")
+        .select("*");
 
       // return data and any potential errors alont with user
       return { chargers, error, user };
     } else {
       return { error: sessionErr };
     }
-
   }
-
-
 };
 
 /**
  * this handles the form submit which destroys the user session
  * and by default logs the user out of application
- * @param {*} param0 
- * @returns 
+ * @param {*} param0
+ * @returns
  */
 export const action = async ({ request }) => {
-
   // get session
-  let session = await getSession(
-    request.headers.get("Cookie")
-  );
+  let session = await getSession(request.headers.get("Cookie"));
 
   // destroy session and redirect to login page
   return redirect("/login", {
-    headers: { "Set-Cookie": await destroySession(session) }
+    headers: { "Set-Cookie": await destroySession(session) },
   });
 };
 
@@ -69,16 +61,13 @@ export const action = async ({ request }) => {
 export let meta = () => {
   return {
     title: "Remix Supabase Starter",
-    description: "Welcome to remix!"
+    description: "Welcome to remix!",
   };
 };
-
-
 
 // https://remix.run/guides/routing#index-routes
 export default function Index() {
   const { chargers, error, userId } = useLoaderData();
-  debugger;
 
   return (
     <div className="remix__page">
