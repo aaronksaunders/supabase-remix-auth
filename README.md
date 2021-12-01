@@ -1,4 +1,8 @@
-# Welcome to Remix!
+# Welcome to Remix Supabase Authentication Flow Tutorial
+-
+
+- Video Is Here: https://www.youtube.com/watch?v=-KiH8feOHSc
+- Simple application showing authentication flow and session management using react remix and supabase
 
 - [Remix Docs](https://remix.run/docs)
 
