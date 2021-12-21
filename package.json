@@ -6,7 +6,7 @@
   "scripts": {
     "dev:remix": "node -r dotenv/config node_modules/.bin/remix dev",
     "postinstall": "remix setup node",
-    "start": "remix-serve build",
+    "start": "node -r dotenv/config node_modules/.bin/remix-serve build",
     "build": "npm run build:css && remix build",
     "build:css": "tailwindcss -o ./app/tailwind.css",
     "dev": "concurrently \"npm run dev:css\" \"npm run dev:remix\"",

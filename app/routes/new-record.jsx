@@ -1,7 +1,13 @@
-import { Form, Link, useActionData } from "remix";
+import { Form, Link, redirect, useActionData } from "remix";
 import { supabaseClient, hasAuthSession } from "~/utils/db.server";
 import { getSession } from "~/utils/session.server";
 
+/**
+ * called to add the new record and return the results
+ *
+ * @param {*} param0
+ * @returns
+ */
 export const action = async ({ request }) => {
   // get user credentials from form
   let form = await request.formData();
@@ -12,9 +18,18 @@ export const action = async ({ request }) => {
   // add new record
   await hasAuthSession(request);
 
-  return await supabaseClient
+  const { data, error } = await supabaseClient
     .from("chargers")
     .insert([{ name, description, state }]);
+
+  console.log(data);
+  console.log(error);
+  // if no error, back to home page... index.jsx
+  if (!error) {
+    return redirect("/", {});
+  }
+
+  return { data, error };
 };
 
 export default function NewRecord() {
