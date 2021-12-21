@@ -82,7 +82,7 @@ export default function CreateAccount() {
   return (
     <div className="remix__page">
       <main>
-        <h2>Welcome to Remix - Create Account Page</h2>
+        <h2>Remix Supabase - Create Account Page</h2>
         <Form method="post" autoComplete="off">
           <div
             style={{

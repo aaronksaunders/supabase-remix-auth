@@ -5,6 +5,7 @@ import {
   Form,
   useActionData,
   redirect,
+  NavLink,
 } from "remix";
 import { supabaseClient } from "~/utils/db.server";
 import { commitSession, getSession } from "~/utils/session.server";
@@ -72,16 +73,11 @@ export default function Login() {
   return (
     <div className="remix__page">
       <main>
-        <h2>Welcome to Remix - Login Page</h2>
+        <h2 className="font-bold text-2xl">
+          Welcome to Supabase Remix - Login Page
+        </h2>
         <Form method="post">
-          <div
-            style={{
-              display: "flex",
-              flex: 1,
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+          <div className="flex flex-1 items-center flex-col">
             <div className="form_item">
               <label htmlFor="email">EMAIL ADDRESS:</label>
               <input id="email" name="email" type="text" />
@@ -90,11 +86,18 @@ export default function Login() {
               <label htmlFor="password">PASSWORD:</label>
               <input id="password" name="password" type="password" />
             </div>
-            <div className="form_item">
-              <button type="submit">LOGIN</button>
-            </div>
-            <div className="form_item">
-              <Link to="/create-account">CREATE ACCOUNT</Link>
+            <div className="flex flex-1 items-center flex-row mt-8">
+              <button
+                className="bg-slate-500 rounded-sm w-fit px-8 mr-4 text-white"
+                type="submit"
+              >
+                LOGIN
+              </button>
+              <NavLink to="/create-account">
+                <button className="bg-slate-500 rounded-sm w-fit px-8 text-white">
+                  CREATE ACCOUNT
+                </button>
+              </NavLink>
             </div>
           </div>
         </Form>

@@ -1,4 +1,4 @@
-import { useLoaderData, redirect, Form } from "remix";
+import { useLoaderData, redirect, Form, Link } from "remix";
 import { supabaseClient } from "~/utils/db.server";
 import { getSession, destroySession } from "~/utils/session.server";
 
@@ -67,19 +67,50 @@ export let meta = () => {
 
 // https://remix.run/guides/routing#index-routes
 export default function Index() {
-  const { chargers, error, userId } = useLoaderData();
+  const { chargers, error, user } = useLoaderData();
 
   return (
     <div className="remix__page">
       <main>
-        <h2>Welcome to Remix!: {userId}</h2>
-        <Form method="post">
-          <div style={{ width: 300 }}>
-            <button>Logout</button>
+        <div className="flex flex-1 items-center flex-col my-4 ">
+          <h2 className="font-bold text-2xl">Welcome to Remix Supabase App</h2>
+          <h4> {user?.email}</h4>
+        </div>
+        <div className="flex flex-1 items-center flex-row my-4 ">
+          <Link to={"/new-record"} style={{ textDecoration: "none" }}>
+            <button className="bg-slate-500 rounded-sm w-fit px-8 mr-4 text-white">
+              NEW RECORD
+            </button>
+          </Link>
+          <Form method="post">
+            <button className="bg-slate-700 rounded-sm w-fit px-8 mr-4 text-white">
+              LOGOUT
+            </button>
+          </Form>
+        </div>
+        {/* <pre>{chargers ? JSON.stringify(chargers, null, 2) : null}</pre> */}
+        {chargers?.map((c) => (
+          <div className="border-b-2 m-4 pb-2 ">
+            <div className="font-bold text-xl py-1">{c.name}</div>
+            <div className="py-1">State: {c.state}</div>
+            <div className="py-1">{c.description}</div>
+            <div className="py-1">{new Date(c.updated_at).toDateString()}</div>
+            <div className="flex flex-1 items-center flex-row my-4">
+              <div className="px-2 py-1 m-1 border border-solid">
+                {c.wifi ? "wifi" : "no wifi"}
+              </div>
+              <div className="px-2 py-1 m-1 border border-solid">
+                {c.kw || 0}&nbsp;kW
+              </div>
+              <div className="px-2 py-1 m-1 border border-solid">
+                {c.stalls || 0}&nbsp;Stalls
+              </div>
+            </div>
           </div>
-        </Form>
-        <p>We're stoked that you're here. 🥳</p>
-        <pre>{chargers ? JSON.stringify(chargers, null, 2) : null}</pre>
+        ))}
+
+        {/* if there is an error, display it */}
+        <div>{error ? error?.message : null}</div>
       </main>
     </div>
   );
