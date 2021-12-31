@@ -9,7 +9,10 @@ import { getSession, destroySession } from "~/utils/session.server";
 export let loader = async ({ request }) => {
   const redirectTo = new URL(request.url).pathname;
 
+  console.log(request.headers.get("Cookie"))
+
   let session = await getSession(request.headers.get("Cookie"));
+  console.log(session.has('access_token'));
 
   // if there is no access token in the header then
   // the user is not authenticated, go to login
@@ -80,6 +83,11 @@ export default function Index() {
           <Link to={"/new-record"} style={{ textDecoration: "none" }}>
             <button className="bg-slate-500 rounded-sm w-fit px-8 mr-4 text-white">
               NEW RECORD
+            </button>
+          </Link>
+          <Link to={"/upload-file"} style={{ textDecoration: "none" }}>
+            <button className="bg-slate-500 rounded-sm w-fit px-8 mr-4 text-white">
+              UPLOAD FILE
             </button>
           </Link>
           <Form method="post">

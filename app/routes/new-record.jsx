@@ -2,6 +2,15 @@ import { Form, Link, redirect, useActionData } from "remix";
 import { supabaseClient, hasAuthSession } from "~/utils/db.server";
 import { getSession } from "~/utils/session.server";
 
+export const loader = async ({ request }) => {
+  try {
+    await hasAuthSession(request);
+    return true;
+  } catch (e) {
+    return redirect("/login", {});
+  }
+};
+
 /**
  * called to add the new record and return the results
  *
@@ -9,26 +18,23 @@ import { getSession } from "~/utils/session.server";
  * @returns
  */
 export const action = async ({ request }) => {
-  // get user credentials from form
+  // get data from form
   let form = await request.formData();
   let name = form.get("name");
   let description = form.get("description");
   let state = form.get("state");
 
-  // add new record
-  await hasAuthSession(request);
-
+  // use form information to write to supabase
   const { data, error } = await supabaseClient
     .from("chargers")
     .insert([{ name, description, state }]);
 
-  console.log(data);
-  console.log(error);
   // if no error, back to home page... index.jsx
   if (!error) {
     return redirect("/", {});
   }
 
+  // else stay on page and return error information
   return { data, error };
 };
 
@@ -80,6 +86,7 @@ export default function NewRecord() {
           </div>
         </Form>
         <div>{actionData?.error ? actionData?.error?.message : null}</div>
+
       </main>
     </div>
   );
