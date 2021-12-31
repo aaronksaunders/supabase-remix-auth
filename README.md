@@ -1,10 +1,18 @@
 # Welcome to Remix Supabase Authentication Flow Tutorial
--
 
-- Video Is Here: https://www.youtube.com/watch?v=-KiH8feOHSc
+
+there is a seperate branch that coincides with each of the videos with the newest branch also on the head / main
+
+## Videos
+Part 1 Is Here: https://www.youtube.com/watch?v=-KiH8feOHSc
 - Simple application showing authentication flow and session management using react remix and supabase
 
+Part 2 Is Here: https://youtu.be/ySQcGc9NICo
+- How To Upload to Storage Buckets and Write Data with Remix and Supabase
+
+## Documentation
 - [Remix Docs](https://remix.run/docs)
+= [Supabase Docs](https://supabase.com/docs/)
 
 ## Development
 
