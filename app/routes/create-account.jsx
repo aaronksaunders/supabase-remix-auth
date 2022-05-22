@@ -1,11 +1,10 @@
+import { json, redirect } from "@remix-run/node";
 import {
   useLoaderData,
-  json,
   Link,
   Form,
   useActionData,
-  redirect,
-} from "remix";
+} from "@remix-run/react";
 import { supabaseClient } from "~/utils/db.server";
 import { commitSession, getSession } from "~/utils/session.server";
 

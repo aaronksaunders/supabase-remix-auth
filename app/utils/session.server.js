@@ -1,8 +1,10 @@
-import { createCookieSessionStorage } from "remix";
 
 //
 // lifted directly from the remix documentation
 // https://remix.run/docs/en/v1/api/remix#sessions
+
+import { createCookieSessionStorage } from "@remix-run/node";
+
 //
 const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({

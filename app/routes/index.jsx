@@ -1,4 +1,5 @@
-import { useLoaderData, redirect, Form, Link } from "remix";
+import { redirect } from "@remix-run/node";
+import { useLoaderData, Form, Link } from "@remix-run/react";
 import { supabaseClient } from "~/utils/db.server";
 import { getSession, destroySession } from "~/utils/session.server";
 

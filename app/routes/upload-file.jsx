@@ -1,62 +1,56 @@
+
+import { supabaseClient, hasAuthSession } from "~/utils/db.server";
 import {
-  Form,
   redirect,
   unstable_parseMultipartFormData,
-  useActionData,
-} from "remix";
-import { supabaseClient, hasAuthSession } from "~/utils/db.server";
+} from '@remix-run/node';
+import { Form, useActionData } from '@remix-run/react';
 
-/**
- *
- * @param {*} param0
- * @returns
- */
 export const action = async ({ request }) => {
-  try {
-    /**
-     *
-     * @param {*} param0
-     * @returns
-     */
-    let uploadHandler = async ({ name, stream, filename }) => {
-      console.log("in uploadHandler");
 
-      if (name !== "my-file") {
-        stream.resume();
-        return;
-      } else {
-        console.log(name, filename);
-      }
 
-      // Get the file as a buffer
-      const chunks = [];
-      for await (const chunk of stream) chunks.push(chunk);
-      const buffer = Buffer.concat(chunks);
+  let uploadHandler = async (props) => {
+    const {
+      name,
+      data,
+      filename,
+      contentType,
+    } = props;
 
-      const { data, error } = await supabaseClient.storage
-        .from("images")
-        .upload(filename, buffer);
-      if (error) {
-        throw error;
-      }
 
-      return JSON.stringify({ data });
-    };
+    if (name !== 'my-file') {
+      data.resume();
+      return;
+    } else {
+      console.log(name, filename);
+    }
 
-    // get file info back after image upload
-    const form = await unstable_parseMultipartFormData(request, uploadHandler);
+    // Get the file as a buffer
+    const chunks = [];
+    for await (const chunk of data) chunks.push(chunk);
+    const buffer = Buffer.concat(chunks);
 
-    //convert it to an object to padd back as actionData
-    const fileInfo = JSON.parse(form.get("my-file"));
 
-    // this is response from upload handler
-    console.log("the form", form.get("my-file"));
+    const { data:uploadData, error } = await supabaseClient.storage
+      .from("images")
+      .upload(filename, buffer,  { contentType});
+    if (error) {
+      throw error;
+    }
+    console.log('returning',  uploadData?.Key);
+    return  uploadData?.Key;
+  };
 
-    return fileInfo;
-  } catch (e) {
-    console.log("action error", e);
-    return { error: e };
-  }
+  // get file info back after image upload
+  const form = await unstable_parseMultipartFormData(request, uploadHandler);
+
+  //convert it to an object to padd back as actionData
+  const fileInfo =  form.get('my-file') ;
+
+  // this is response from upload handler
+  console.log('the form', fileInfo);
+
+  return fileInfo || null;
 };
 
 // https://remix.run/api/conventions#meta
@@ -93,7 +87,7 @@ export default function UploadPage() {
       </main>
       <div>{actionData?.error ? actionData?.error?.message : null}</div>
       <div>
-        {actionData?.data ? `File Uploaded: ${actionData?.data?.Key}` : null}
+      <div>{actionData ? `File Uploaded: ${actionData}` : null}</div>
       </div>
     </div>
   );

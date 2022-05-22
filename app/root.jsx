@@ -7,7 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
   useCatch
-} from "remix";
+} from "@remix-run/react";
 
 import globalStylesUrl from "~/styles/global.css";
 import darkStylesUrl from "~/styles/dark.css";
