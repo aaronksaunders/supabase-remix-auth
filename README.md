@@ -1,7 +1,7 @@
-# Welcome to Remix Supabase Authentication Flow Tutorial
+# Welcome to Remix Supabase Authentication Flow Tutorial - Updated To work with Remix 1.5.1
 
 
-there is a seperate branch that coincides with each of the videos with the newest branch also on the head / main
+The newest branch also on the head / main
 
 ## Videos
 Part 1 Is Here: https://www.youtube.com/watch?v=-KiH8feOHSc
